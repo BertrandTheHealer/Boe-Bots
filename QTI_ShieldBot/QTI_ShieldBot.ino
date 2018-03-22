@@ -1,37 +1,18 @@
 /*
-
-This demonstration shows how to use a set of four Parallax QTI sensors to provide line-following
-capability to your BOE Shield-Bot Arduino robot.
-
-Refer to the following pages for using the QTI Line Follower AppKit. 
-  http://www.parallax.com/product/28108
-
-Refer to the following help pages for additional wiring diagrams when using the QTI sensors with the
-Arduino Uno:
-  http://learn.parallax.com/KickStart/555-27401
-
-Wiring Diagram for QTI Sensors:
-Arduino          Sensor
-D7               QTI4 - Far left
-D6               QTI3 - Mid left
-D5               QTI2 - Mid right
-D4               QTI1 - Far right
-
-Wiring Diagram for Servos:
-Arduino          Servo
-D13              Left servo
-D12              Right servo
-
-This example code makes use of an intermediate Arduino programming technique, specifically directly
-manipulating multiple pins at once on the Arduino. This technique is referred to as port manipulation,
-and is more fully discussed here:
-  http://playground.arduino.cc/Learning/PortManipulation
-
-Important: This demonstration was written, and intended for, use with the Arduino Uno microcontroller. 
-Other Arduino boards may not be compatible.
-
-*/
-
+ * sudo chmod 666 /dev/ttyACM0
+ * 
+ * Sensors:
+ * Arduino          Sensor
+ * D7               QTI4 - Far left
+ * D6               QTI3 - Mid left
+ * D5               QTI2 - Mid right
+ * D4               QTI1 - Far right
+ * 
+ * Servos:
+ * Arduino          Servo
+ * D13              Left servo
+ * D12              Right servo
+ */
 #include <Servo.h>                           // Use the Servo library (included with Arduino IDE)  
 
 Servo servoL;                                // Define the left and right servos
@@ -43,6 +24,8 @@ void setup()
   Serial.begin(9600);                        // Set up Arduino Serial Monitor at 9600 baud
   servoL.attach(13);                         // Attach (programmatically connect) servos to pins on Arduino
   servoR.attach(12);
+  servoL.writeMicroseconds(1500);            //stop the motors
+  servoR.writeMicroseconds(1500);            //stop the motors
 }
 
 // This code repeats indefinitely
@@ -71,11 +54,19 @@ void loop()
       vL = 0;
       vR = 100;
       break;
+    case B1110:                        
+      vL = -40;
+      vR = 100;
+      break;
     case B0100:                        
       vL = 50;
       vR = 100;
       break;
     case B0110:                        
+      vL = 100;
+      vR = 100;
+      break;
+    case B1111:                        
       vL = 100;
       vR = 100;
       break;
@@ -87,14 +78,22 @@ void loop()
       vL = 100;
       vR = 0;
       break;
+    case B0111:                        
+      vL = 100;
+      vR = -40;
+      break;
     case B0001:                        
       vL = 100;
       vR = -100;
       break;
+    case B0000:                        
+      vL = -20;
+      vR = -20;
+      break;
   }
   
-  servoL.writeMicroseconds(1500 + vL);      // Steer robot to recenter it over the line
-  servoR.writeMicroseconds(1500 - vR);
+  servoL.writeMicroseconds(1500 + vR);      // Steer robot to recenter it over the line
+  servoR.writeMicroseconds(1500 - vL);
   
   delay(50);                                // Delay for 50 milliseconds (1/20 second)
 }
