@@ -1,3 +1,5 @@
+#include <LiquidCrystal.h>
+
 /*
  * sudo chmod 666 /dev/ttyACM0
  * 
@@ -17,6 +19,7 @@
 
 Servo servoL;                                // Define the left and right servos
 Servo servoR;
+int lastTurn = 1;
 
 // Perform these steps with the Arduino is first powered on
 void setup()
@@ -46,21 +49,25 @@ void loop()
   int vL, vR;
   switch(pins)                               // Compare pins to known line following states
   {
-    case B1000:                        
+    case B1000:                             
       vL = -100;                             // -100 to 100 indicate course correction values
       vR = 100;                              // -100: full reverse; 0=stopped; 100=full forward
+      lastTurn = 0;
       break;
     case B1100:                        
       vL = 0;
       vR = 100;
+      lastTurn = 0;
       break;
     case B1110:                        
       vL = -40;
       vR = 100;
+      lastTurn = 0;
       break;
     case B0100:                        
       vL = 50;
       vR = 100;
+      lastTurn = 0;
       break;
     case B0110:                        
       vL = 100;
@@ -73,27 +80,43 @@ void loop()
     case B0010:                        
       vL = 100;
       vR = 50;
+      lastTurn = 1;
       break;
     case B0011:                        
       vL = 100;
       vR = 0;
+      lastTurn = 1;
       break;
     case B0111:                        
       vL = 100;
       vR = -40;
+      lastTurn = 1;
       break;
     case B0001:                        
       vL = 100;
       vR = -100;
+      lastTurn = 1;
       break;
-    case B0000:                        
-      vL = -20;
-      vR = -20;
+    case B0000:
+      switch(lastTurn){
+        case 1:
+          vL = 20;
+          vR = -20;
+          break;
+        case 0:
+          vL = -20;
+          vR = 20;
+          break;                        
+      }
+      break;
+    default:
+      vL = 100;
+      vR = 100;
       break;
   }
   
   servoL.writeMicroseconds(1500 + vR);      // Steer robot to recenter it over the line
-  servoR.writeMicroseconds(1500 - vL);
+  servoR.writeMicroseconds(1500 - vL);      // 
   
   delay(50);                                // Delay for 50 milliseconds (1/20 second)
 }
