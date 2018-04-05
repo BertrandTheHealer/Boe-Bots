@@ -6,34 +6,36 @@
 
 #include <Servo.h>                           // Include servo library
  
-Servo servoLeft;                             // Declare left and right servos
-Servo servoRight;
+Servo servoL;                             // Declare left and right servos
+Servo servoR;
 
-const int setpoint = 1;                      // Target distances
+const int setpoint = 0;                      // Target distances
 const int kpl = -50;                         // Proportional control constants
 const int kpr = -50;
  
 void setup()                                 // Built-in initialization block
 {
   pinMode(11, INPUT);  pinMode(10, OUTPUT);   // Left IR LED & Receiver
-  pinMode(3, INPUT);  pinMode(2, OUTPUT);    // Right IR LED & Receiver
+  pinMode(5, INPUT);  pinMode(4, OUTPUT);    // Right IR LED & Receiver
 
-  tone(9, 3000, 1000);                       // Play tone for 1 second
-  delay(1000);                               // Delay to finish tone
-
-  servoLeft.attach(13);                      // Attach left signal to pin 13
-  servoRight.attach(12);                     // Attach right signal to pin 12
+  servoL.attach(13);                      // Attach left signal to pin 13
+  servoR.attach(12);                     // Attach right signal to pin 12
+  Serial.begin(9600);
 }  
  
 void loop()                                  // Main loop auto-repeats
 {
   int irLeft = irDistance(10, 11);            // Measure left distance
-  int irRight = irDistance(2, 3);            // Measure right distance
+  int irRight = irDistance(4, 5);            // Measure right distance
  
   // Left and right proportional control calculations
   int driveLeft = (setpoint - irLeft) * kpl;     
   int driveRight = (setpoint - irRight) * kpr;
- 
+  if ((irLeft == setpoint)&&(irRight == setpoint)) {
+    driveLeft = 200;
+    driveRight = 200;
+  }
+
   maneuver(driveLeft, driveRight, 20);       // Drive levels set speeds
 }
 
@@ -63,12 +65,12 @@ void maneuver(int speedLeft, int speedRight, int msTime)
 {
   // speedLeft, speedRight ranges: Backward  Linear  Stop  Linear   Forward
   //                               -200      -100......0......100       200
-  servoLeft.writeMicroseconds(1500 + speedLeft);   // Set left servo speed
-  servoRight.writeMicroseconds(1500 - speedRight); // Set right servo speed
+  servoL.writeMicroseconds(1500 + speedLeft);   // Set left servo speed
+  servoR.writeMicroseconds(1500 - speedRight); // Set right servo speed
   if(msTime==-1)                                   // if msTime = -1
   {                                  
-    servoLeft.detach();                            // Stop servo signals
-    servoRight.detach();   
+    servoL.detach();                            // Stop servo signals
+    servoR.detach();   
   }
   delay(msTime);                                   // Delay for msTime
 }
