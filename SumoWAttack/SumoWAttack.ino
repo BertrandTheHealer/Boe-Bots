@@ -59,7 +59,7 @@ void loop()
     linePinStates[pin] = digitalRead(linePins[pin]);
     pinvalues = concat(pinvalues,linePinStates[pin]);
   }
-  Serial.println(pinvalues);
+  //Serial.println(pinvalues);
   
   // Determine how to steer based on state of the four QTI sensors
   int vL, vR;
@@ -106,8 +106,9 @@ void loop()
       int irLeft = irDistance(10, 11);            // Measure left distance
       int irRight = irDistance(4, 5);            // Measure right distance
 
-      int vL = (setpoint - irLeft) * kpl;     
+      int vL = (setpoint - irLeft) * kpl;
       int vR = (setpoint - irRight) * kpr;
+      Serial.print(vL);Serial.print(", ");Serial.println(vR);
       if ((irLeft == setpoint)&&(irRight == setpoint)) {
         vL = 200;
         vR = 200;
