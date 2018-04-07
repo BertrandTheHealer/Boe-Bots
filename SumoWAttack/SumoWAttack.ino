@@ -37,6 +37,7 @@ void setup()
   servoR.attach(12);
   servoL.writeMicroseconds(1500);            //stop the motors
   servoR.writeMicroseconds(1500);            //stop the motors
+  delay(5000);                               //wait
 }
 
 // This code repeats indefinitely
@@ -59,7 +60,7 @@ void loop()
     linePinStates[pin] = digitalRead(linePins[pin]);
     pinvalues = concat(pinvalues,linePinStates[pin]);
   }
-  Serial.println(pinvalues);
+  //Serial.println(pinvalues);
   
   // Determine how to steer based on state of the four QTI sensors
   int vL, vR;
@@ -105,6 +106,8 @@ void loop()
       //Attack code
       int irLeft = irDistance(10, 11);            // Measure left distance
       int irRight = irDistance(4, 5);            // Measure right distance
+      Serial.print(irLeft);Serial.print(", ");Serial.println(irRight);
+
 
       int vL = (setpoint - irLeft) * kpl;     
       int vR = (setpoint - irRight) * kpr;
